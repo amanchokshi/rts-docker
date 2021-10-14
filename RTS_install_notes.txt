@@ -1,0 +1,94 @@
+Libraries you need and how to get/install them (Ubuntu 18.04)
+This assumes you have already installed CUDA(?)
+
+********************
+pthread
+
+sudo apt-get install libevent-pthreads-2.1-6
+
+********************
+CFITSIO
+
+sudo wget http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio_latest.tar.gz
+sudo tar zxvf cfitsio_latest.tar.gz
+cd cfitsio-4.0.0/
+./configure --enable-reentrant --prefix=/usr/local
+make
+make install
+
+********************
+
+WCSLIB
+
+sudo apt-get install wcslib-dev
+
+********************
+
+FFTW3 (probably already installed)
+
+sudo apt-get install fftw3 fftw3-dev
+
+********************
+
+MPICH (probably already installed)
+
+sudo apt-get install libcr-dev mpich mpi-default-dev
+
+********************
+
+HEALPIX (there is some backward compatability isse so build this version by hand)
+
+sudo apt-get install pgplot5
+cd /usr/local
+sudo wget http://downloads.sourceforge.net/project/healpix/Healpix_2.20a/Healpix_2.20a_2011Feb09.tar.gz
+
+sudo tar zxvf Healpix_2.20a_2011Feb09.tar.gz
+
+cd Healpix_2.20a/
+##open and edit top of ./configure file to #!/bin/sh to #!/bin/bash
+./configure -L
+#chose to complie through fortran - compiler is gfortran
+#enter -I$(F90_INCDIR) -DGFORTRAN -fno-second-underscore -pthread
+#say yes to the option to use pgplot and enter
+#-L/usr/lib -lpgplot -L/usr/lib/x86_64-linux-gnu -lX11
+
+## (sometimes) the X11 lib isn't named correctly, do a softlink
+cd /usr/lib/x86_64-linux-gnu
+sudo ln -s libX11.so.6.3.0 libX11.so
+
+********************
+
+LAPACK (already installed?)
+
+sudo apt-get install libatlas-base-dev  libatlas-doc libatlas-test libatlas3-base
+
+********************
+
+HDF5
+
+sudo apt-get install libhdf5-dev
+
+*********************
+*********************
+*********************
+
+To build the RTS you should:
+
+i) cd ~/mwa-RTS/utils
+   make (this builds the SLA_LIB library)
+
+ii) Create a YourMachine.mk file in the ~/mwa-RTS/src/Machines directory.
+    This contains specific information about where the different RTS libraries
+    live on your machine.
+    Probably yours will look a lot like hawerchuk.mk although you might have
+    to change some of the paths depending on where pre-installed libraries went
+    You should also change the CUBIN_ARCH_FLAG depending on what GPU you are using. Just read the left hand column in this table to find the number corresponding to your card
+    https://en.wikipedia.org/wiki/CUDA#GPUs_supported
+
+    Once this is done you create a link to in in the src directory ie
+
+    ln -s Mahcines/YourMachine.mk machine.mk
+
+    Then 'make' in the src dir and hope for the best.
+
+
