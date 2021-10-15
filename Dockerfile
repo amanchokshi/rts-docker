@@ -25,7 +25,7 @@ RUN wget http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio_latest.tar.g
     tar zxvf cfitsio_latest.tar.gz && rm -rf *tar.gz &&\
     cd cfitsio-4.0.0 && \
     ./configure --enable-reentrant --prefix=/usr/local && \
-    make && make install
+    make && make install && rm -rf ../cfitsio-4.0.0 
 
 # Install HEALPIX (there is some backward compatability issues so build this version by hand)
 RUN cd /usr/local && \
@@ -33,14 +33,20 @@ RUN cd /usr/local && \
     tar zxvf Healpix_2.20a_2011Feb09.tar.gz && rm -rf *tar.gz &&\
     cd Healpix_2.20a/ && \
 
-    ##open and edit top of ./configure file to #!/bin/sh to #!/bin/bash
+    # Open and edit top of ./configure file to #!/bin/sh to #!/bin/bash
     sed -i.bak "s|bin/sh|bin/bash|g" ./configure && \
 
-    ##stupid interactive build process
-    echo '3 \ngfortran \n/ \ny \n-I$(F90_INCDIR) -DGFORTRAN -fno-second-underscore -pthread \n-O3 \ngcc \n-O \nar -rsv \nlibcfitsio.a \n/usr/local/lib \ny \n-L/usr/local/pgplot -lpgplot -L/usr/X11R6/lib -lX11 \n1 \ny \n0' > hlpx_config && \
-    ./configure -L < hlpx_config && make
+    # Stupid interactive build process
+    echo \
+    '3 \ngfortran \n/ \ny \n-I$(F90_INCDIR) -DGFORTRAN -fno-second-underscore -pthread \
+    \n-O3 \ngcc \n-O \nar -rsv \nlibcfitsio.a \n/usr/local/lib \
+    \ny \n-L/usr/local/pgplot -lpgplot -L/usr/X11R6/lib -lX11 \n1 \ny \n0' \
+    > hlpx_config && \
+    ./configure -L < hlpx_config && \
+    make
 
 # Install RTS
+WORKDIR /root
 COPY ./mwa-RTS mwa-RTS
 RUN cd mwa-RTS/utils && make && \
     cd ../src && ln -s Machines/rts-cpu-docker.mk machine.mk && \
