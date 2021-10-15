@@ -3,17 +3,19 @@ FROM ubuntu:18.04
 MAINTAINER Aman Chokshi <achokshi@student.unimelb.edu.au>
 
 # Update and install packages
-RUN apt-get -y update && \
-    apt-get -y install git \
-                          wget \
-                          build-essential \
-                          cmake \
-                          gfortran \
-                          libx11-dev \
-                          libevent-pthreads-2.1-6 \
-                          wcslib-dev fftw3 fftw3-dev \
-                          libhdf5-dev pgplot5 \
-                          libatlas-base-dev  libatlas-doc libatlas-test libatlas3-base \
+RUN apt-get -y update \
+    && apt-get -y install \
+    git \
+    gdb \
+    wget \
+    cmake \
+    gfortran \
+    libx11-dev \
+    build-essential \
+    libhdf5-dev pgplot5 \
+    libevent-pthreads-2.1-6 \
+    wcslib-dev fftw3 fftw3-dev \
+    libatlas-base-dev  libatlas-doc libatlas-test libatlas3-base \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && apt-get autoremove \
     && apt-get clean
@@ -40,6 +42,10 @@ RUN cd /usr/local && \
 
 # Install RTS
 COPY ./mwa-RTS mwa-RTS
-RUN cd mwa-RTS/utils && make
+RUN cd mwa-RTS/utils && make && \
+    cd ../src && ln -s Machines/rts-cpu-docker.mk machine.mk && \
+    make rts_node_cpu
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 ENTRYPOINT /bin/bash
