@@ -20,6 +20,11 @@ RUN apt-get -y update \
     && apt-get autoremove \
     && apt-get clean
 
+# Enable prompt color in the skeleton .bashrc
+RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc && \
+   # Add call to conda init script see https://stackoverflow.com/a/58081608/4413446
+   echo 'eval "$(command conda shell.bash hook 2> /dev/null)"' >> /etc/skel/.bashrc
+
 # Install CFITSIO
 RUN wget http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio_latest.tar.gz && \
     tar zxvf cfitsio_latest.tar.gz && rm -rf *tar.gz &&\
