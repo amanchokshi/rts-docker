@@ -53,7 +53,8 @@ RUN cd /usr/local && \
 # Install RTS
 WORKDIR /root
 COPY ./mwa-RTS mwa-RTS
-RUN cd mwa-RTS/utils && make && \
+RUN cd mwa-RTS && git checkout beam_tool && \
+    cd utils && make && \
     cd ../src && ln -s Machines/rts-cpu-docker.mk machine.mk && \
     make rts_node_cpu
 
