@@ -56,6 +56,7 @@ COPY ./mwa-RTS mwa-RTS
 RUN cd mwa-RTS && git checkout beam_tool && \
     cd utils && make && \
     cd ../src && ln -s Machines/rts-cpu-docker.mk machine.mk && \
+    make clean && \
     make rts_node_cpu
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
